@@ -15,10 +15,11 @@ OUT_IMAGE_PATH	= "output.png"		# The generated file
 ##
 ## Load prompt data
 while True:
+	## Kill some time between listens
+	sleep(2)
 	## If a prompt file is found
 	if not isfile(DATA_PATH):
 		continue
-	print("Found data.txt")
 	## Try to parse and delete model file. If it doesn't work, don't worry but skip this loop.
 	try:
 		with open("data.txt") as file:
@@ -32,6 +33,7 @@ while True:
 	negative	= json["negative_prompt"] if "negative_prompt" in json else ""
 	steps		= json["steps"] if "steps" in json else 5
 	strength	= json["strength"] if "strength" in json else 5
+	cfg			= json["cfg"] if "cfg" in json else 7.5
 	pixels		= json["pixels"] 
 	## Make the image from the pdn output
 	image	= Image.new("RGBA", (len(pixels), len(pixels[0])))
@@ -45,22 +47,31 @@ while True:
 		inImage	= file.read()
 	## Do the request
 	payload	= {
+		"width":				len(pixels),
+		"height":				len(pixels[0]),
+		"cfg_scale":			cfg,
 		"prompt": 				prompt,
 		"negative_prompt":		negative,
 		"steps":				steps,
 		"denoising_strength":	strength,
 		"init_images": 			[b64encode(inImage).decode('utf-8')]
 	}
+	# Print the config in the console
+	print("---")
+	print("Prompt:   %s" %(prompt))
+	print("Width:    %s" %(len(pixels)))
+	print("Height:   %s" %(len(pixels[0])))
+	print("CFG:      %s" %(cfg))	
+	print("Strength: %s" %(strength))	
+	print("Steps:    %s" %(steps))	
 	response = post(url=URL, json=payload)
-	print(vars(response))
 	## Write image from SD to output file
 	with open(OUT_IMAGE_PATH, "wb") as file:
 		file.write(b64decode(response.json()["images"][0]))
 	image = Image.open(OUT_IMAGE_PATH)
 	## Open the image for me, please.
 	image.show()
-	## Kill some time between listens
-	sleep(2)
+	
 
 
 
