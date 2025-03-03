@@ -1,7 +1,7 @@
 # Stable diffusion for Paint.net
 A dirty Stable diffusion plugin for Paint.net using the CodeLab development tools.
 
-### Why "dirty"?
+### Define dirty?
 Was just a weekend project. It's written in CodeLab which has limited .Net access. Loads of hack and slash to make it work without access to System.*.
 
 ## Getting started
